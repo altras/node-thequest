@@ -1,6 +1,7 @@
 extends layout
 
 block content
+<<<<<<< HEAD
   h1 TheQuest
   h2 Hosted by a(href='http://camplight.net/', title='Camplight') Camplight
   .menu
@@ -12,6 +13,22 @@ block content
   .gameWorld
     .winLabel.endLabel You win
     .looseLabel.endLabel You loose :|
+=======
+  .gameHUD
+    .gameTitle 
+      h1 TheQuest
+      a(href="javascript: void(0)").soundToggle Toggle sound off
+    .wrapper
+      .menu
+        a(href="/users/logout") logout
+        .timeLeft.menuItem
+        .victories.menuItem
+          span.victoriesCount 0
+      .gameWorld
+        .winLabel.endLabel You win
+        .looseLabel.endLabel You loose :|
+
+>>>>>>> b7092511244cef44b3d1c715db73ee46ca369808
   
 
 

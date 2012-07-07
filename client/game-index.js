@@ -7,14 +7,8 @@ var rand = function(LowerRange, UpperRange){
   return Math.floor(Math.random() * (UpperRange - LowerRange + 1)) + LowerRange;
 }
 
-// Audo not supported mockup.
-if(!Audio) {
-  var Audio = function(){
-    this.play = function(){}
-  };
-}
-
 var sounds = {
+  enabled: true,
   trapped: new Audio("sounds/trap.wav"),
   start: new Audio("sounds/start.wav"),
   win: [
@@ -83,12 +77,12 @@ socket.on("removePlayer", function(playerData){
 });
 
 socket.on("updateGame", function (gameState) {
-  $(".timeLeft").html("Time left:"+gameState.timeLeft);
+  $(".timeLeft").html(gameState.timeLeft);
   //expect playerStates to be an array
   for (var i = 0; i < gameState.players.length; i ++) {
     addOrUpdate(gameState.players[i]);
   }
-  if(gameState.treasureTrapped)
+  if(gameState.treasureTrapped && sounds.enabled)
     sounds.trapped.play();
 });
 
@@ -96,10 +90,11 @@ socket.on("endgame", function (victory) {
   $(".endLabel").hide();
   victory?$(".winLabel").show():$(".looseLabel").show();
 
-  if(victory)
-    sounds.win[rand(0,sounds.win.length)].play();
-  else
-    sounds.lose[rand(0, sounds.lose.length)].play();
+  if(sounds.enabled)
+    if(victory)
+      sounds.win[rand(0,sounds.win.length)].play();
+    else
+      sounds.lose[rand(0, sounds.lose.length)].play();
 
   var player = getPlayerByUsername(user.username);
   player.victories += victory?1:0;
@@ -112,7 +107,9 @@ socket.on("restart", function(){
 
   players = [];
   socket.emit("addPlayer");
-  sounds.start.play();
+
+  if(sounds.enabled)
+    sounds.start.play();
 });
 
 var direction = function (e) {
@@ -131,11 +128,22 @@ var direction = function (e) {
 }
 
 $(window).on("keydown", function(e){
+  e.preventDefault();
   socket.emit("directionChange", true, direction(e));
 });
 
 $(window).on("keyup", function(e){
+  e.preventDefault();
   socket.emit("directionChange", false, direction(e));
+});
+
+$(".soundToggle").click(function(e){
+  e.preventDefault();
+  sounds.enabled = !sounds.enabled;
+  if(sounds.enabled)
+    $(".soundToggle").text("Toggle sound off");
+  else
+    $(".soundToggle").text("Toggle sound on");
 });
 
 $(".endLabel").hide();
